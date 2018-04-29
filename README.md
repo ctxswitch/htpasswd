@@ -1,37 +1,35 @@
 # Htpasswd Authentication
 
-Provides authentication functions for golang applications.  
+Htpasswd is a go package for reading and authenticating against htpasswd libraries.
 
-Accept bcrypt or md5 passwords
+## Installation
 
-Crypt only supports the 2a specification since golang crypt library does not currently support the latest 2y specification
+`go get -u github.com/rlyon/go-htpasswd`
 
-type File struct {
-	path
-	lastModified
-	checkIntervalChannel
-	mutex
-	Users
-}
+## Quick Start
 
-type User struct {
+```go
+h, err := htpasswd.Open('/path/to/.htpasswd')
+h.Authenticate('username', 'password')
 
-}
+// At any point you can reload the users if anything has changed
+h.Reload()
+```
 
-parseLine(map, string) user, format, hash
-	returns the user format and hash if the line is a valid line
-isModified(file)
-	checks to see if Htpasswd.lastModified is less than the Htpasswd.path modification time and reloads.
-isValidLine(string)
-	checks to see if the line matches the bcrypt or md5 formats
-setUser(user, hash)
-	adds the user to Htpasswd.Users if it doesn't exist or overwrites the hash if it does exist
-NewReader(file, checkInterval=0) (*HtpasswdFile, error)
-Load(file, checkInterval=0)
-	loads a file and if check is true then start a thread to reload the file at the given interval.
-Reload(file)
-	checks the last modified and if it has changed then reload the users.
-Authenticate(user, password)
-	grabs a lock on the interface and checks to see if the user and password match
+At some point a process that reloads the contents at a specified check interval will be added, but it has not been implimented.  It will look like this:
 
-file, err := htpasswd.New('/tmp/.htpasswd', 0)
+```go
+h, err := htpasswd.Open('/path/to/.htpasswd')
+// Set the check interval for 30 seconds
+h.CheckInterval = 30
+// Start the process to automatically reload the file at the specified check interval
+h.AutoReload()
+```
+
+## Development Status
+
+Though the standard interface will be stable, the project is new and should not yet be considered stable for production use.
+
+## Contributing
+
+Contributions are encouraged.  In the interest of fostering an open and welcoming environment, we pledge to making participation in our project and our community a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, religion, or sexual identity and orientation.
