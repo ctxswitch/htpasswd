@@ -4,7 +4,7 @@ Htpasswd is a go package for reading and authenticating using htpasswd files.
 
 ## Installation
 
-`go get -u github.com/rlyon/htpasswd`
+`go get -u github.com/ctxswitch/htpasswd`
 
 ## Quick Start
 
