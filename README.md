@@ -1,6 +1,6 @@
 # Htpasswd Authentication
 
-Htpasswd is a go package for reading and authenticating against htpasswd libraries.
+Htpasswd is a go package for reading and authenticating using htpasswd files.
 
 ## Installation
 
