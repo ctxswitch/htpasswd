@@ -6,40 +6,28 @@ import (
 	"testing"
 )
 
-var bcryptlinetests = []struct {
-	in  string
-	out bool
-}{
-	// Valid, 2a specification
-	{"example:$2a$10$3cz0nlM0jWIAs1wXcBu7XuLJjNg9Mz36RSExfwSW.0rs.xPs2Gghu", true},
-	// Valid, 2y specification
-	{"example:$2y$05$Vdk6E1bKMHVG.t0SLw5yiO224pZyGC27TcDCPPx3gmyf7us3X8yNa", true},
-	// Invalid, hash is shorter than 53 characters
-	{"example:$2a$10$3cz0nlM0jWIAs1wXcBu7XuLJjNg9Mz36RSExfwSW.0rs.", false},
-	// Invalid, hash is longer than 53 characters
-	{"example:$2a$10$3cz0nlM0jWIAs1wXcBu7XuLJjNg9Mz36RSExfwSW.0rs.xPs2GghuXXXXXXX", false},
-	// Invalid, line has no username
-	{"$2a$10$3cz0nlM0jWIAs1wXcBu7XuLJjNg9Mz36RSExfwSW.0rs.xPs2Gghu", false},
-	// Invalid, username starts with a digit
-	{"1:$2a$10$3cz0nlM0jWIAs1wXcBu7XuLJjNg9Mz36RSExfwSW.0rs.xPs2Gghu", false},
-	// Invalid, line is just crap
-	{"Well I'll be a monkey's ass", false},
-}
-
-var commentlinetests = []struct {
-	in  string
-	out bool
-}{
-	// Valid, line is a comment
-	{"# Hi", true},
-	// Invalid, not an appropriate comment for an htpasswd file
-	{"// Not a comment", false},
-	// Invalid, garbage line
-	{"That really shouldn't happen, no. really.", false},
-}
-
 func TestIsValidBcryptLine(t *testing.T) {
-	for _, tt := range bcryptlinetests {
+	var tests = []struct {
+		in  string
+		out bool
+	}{
+		// Valid, 2a specification
+		{"example:$2a$10$3cz0nlM0jWIAs1wXcBu7XuLJjNg9Mz36RSExfwSW.0rs.xPs2Gghu", true},
+		// Valid, 2y specification
+		{"example:$2y$05$Vdk6E1bKMHVG.t0SLw5yiO224pZyGC27TcDCPPx3gmyf7us3X8yNa", true},
+		// Invalid, hash is shorter than 53 characters
+		{"example:$2a$10$3cz0nlM0jWIAs1wXcBu7XuLJjNg9Mz36RSExfwSW.0rs.", false},
+		// Invalid, hash is longer than 53 characters
+		{"example:$2a$10$3cz0nlM0jWIAs1wXcBu7XuLJjNg9Mz36RSExfwSW.0rs.xPs2GghuXXXXXXX", false},
+		// Invalid, line has no username
+		{"$2a$10$3cz0nlM0jWIAs1wXcBu7XuLJjNg9Mz36RSExfwSW.0rs.xPs2Gghu", false},
+		// Invalid, username starts with a digit
+		{"1:$2a$10$3cz0nlM0jWIAs1wXcBu7XuLJjNg9Mz36RSExfwSW.0rs.xPs2Gghu", false},
+		// Invalid, line is just crap
+		{"Well I'll be a monkey's ass", false},
+	}
+
+	for _, tt := range tests {
 		t.Run(tt.in, func(t *testing.T) {
 			i := isValidLine(bexp, tt.in)
 			if i != tt.out {
@@ -50,7 +38,19 @@ func TestIsValidBcryptLine(t *testing.T) {
 }
 
 func TestIsValidCommentLine(t *testing.T) {
-	for _, tt := range commentlinetests {
+	var tests = []struct {
+		in  string
+		out bool
+	}{
+		// Valid, line is a comment
+		{"# Hi", true},
+		// Invalid, not an appropriate comment for an htpasswd file
+		{"// Not a comment", false},
+		// Invalid, garbage line
+		{"That really shouldn't happen, no. really.", false},
+	}
+
+	for _, tt := range tests {
 		t.Run(tt.in, func(t *testing.T) {
 			i := isValidLine(cexp, tt.in)
 			if i != tt.out {
@@ -94,7 +94,7 @@ func TestReadNonExistentFile(t *testing.T) {
 func TestUserAuthenticate(t *testing.T) {
 	h, err := Open("testdata/htpasswd.valid")
 	if err != nil {
-		t.Errorf("authenticate[open] could not open file")
+		t.Errorf("authenticate[open] could not open file %v", err)
 		return
 	}
 
@@ -135,7 +135,7 @@ func TestReload(t *testing.T) {
 	// Load and make sure that we get the appropriate users
 	h, err := Open("/tmp/htpasswd.testing")
 	if err != nil {
-		t.Errorf("authenticate[open] could not open file")
+		t.Errorf("authenticate[open] could not open file %v", err)
 		return
 	}
 
