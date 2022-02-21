@@ -148,7 +148,7 @@ func TestReload(t *testing.T) {
 	}
 
 	// When we reload without changing the users remain the same
-	h.Reload()
+	_ = h.Reload()
 
 	if _, exist := h.users["example1"]; !exist {
 		t.Errorf("read[example1] did not contain the example1 user")
@@ -168,7 +168,7 @@ func TestReload(t *testing.T) {
 	w.Flush()
 
 	// Make sure we get the new users after the reload
-	h.Reload()
+	_ = h.Reload()
 	if _, exist := h.users["example1"]; !exist {
 		t.Errorf("read[example1] did not contain the example1 user")
 	}
