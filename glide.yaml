@@ -1,9 +1,0 @@
-package: ""
-import:
-- package: golang.org/x/crypto
-  subpackages:
-  - bcrypt
-- package: github.com/stretchr/testify
-  version: ~1.2.1
-  subpackages:
-  - assert

@@ -13,7 +13,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// A File reads htpasswd files and provides authentication
+// File reads htpasswd files and provides authentication
 //
 // As returned by Open, a File reads in an htpasswd file searching for
 // bcrypt hashed passwords that conform to the published formats:
@@ -45,7 +45,7 @@ type File struct {
 
 var (
 	// Regexp for the 2a, 2b, or 2y bcrypt specifications.
-	bexp = regexp.MustCompile("^[a-zA-Z]+[a-zA-Z0-9_-]*:\\$2[aby]\\$[0-9]{2}\\$[A-Za-z0-9./]{53}$")
+	bexp = regexp.MustCompile(`^[a-zA-Z]+[a-zA-Z0-9_-]*:\$2[aby]\$[0-9]{2}\$[A-Za-z0-9./]{53}$`)
 	// Regexp for comment lines
 	cexp = regexp.MustCompile("^#.*$")
 )
@@ -128,11 +128,15 @@ func (h *File) readFile() error {
 			user := strings.SplitN(line, ":", 2)
 			users[user[0]] = user[1]
 		} else {
-			return fmt.Errorf("Invalid line found: %s", line)
+			return fmt.Errorf("invalid line found: %s", line)
 		}
 	}
 
 	stat, err := os.Stat(h.path)
+	if err != nil {
+		return err
+	}
+
 	h.lastModified = stat.ModTime()
 	h.lastSize = stat.Size()
 	h.users = users
